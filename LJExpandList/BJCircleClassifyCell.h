@@ -7,8 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-@class BJClassifyFristBtnModel;
+@class BJClassifyFristBtnModel,BJCircleClassifyCell;
+
+@protocol BJCircleClassifyCellDelegate <NSObject>
+@required
+- (void)circleClassifyCell:(BJCircleClassifyCell *)cell didSelectedLabelText:(NSString *)text;
+
+@end
+
 @interface BJCircleClassifyCell : UITableViewCell
 @property (strong, nonatomic) NSArray<BJClassifyFristBtnModel *> *fristBtnModels;
+@property (weak, nonatomic) id<BJCircleClassifyCellDelegate> delegate;
+@property (strong, nonatomic) NSIndexPath *indexPath;
 @end
 UIKIT_EXTERN NSString * const bj_CircleClassifyCell;

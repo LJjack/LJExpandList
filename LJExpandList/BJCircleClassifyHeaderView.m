@@ -19,21 +19,22 @@
 + (instancetype)buttonWithType:(UIButtonType)buttonType {
     BJCircleClassifyHeaderViewBtn *btn = [super buttonWithType:buttonType];
     [btn setTitleColor:kCircleClassifyHeaderViewBtnColor forState:UIControlStateNormal];
-    [btn setImage:[UIImage imageNamed:@"disclosure"] forState:UIControlStateNormal];
+    [btn setImage:[UIImage imageNamed:@"circle_classify_down"] forState:UIControlStateNormal];
     btn.titleLabel.font = [UIFont systemFontOfSize:kCircleClassifyHeaderViewBtnSize];
     btn.titleLabel.textAlignment = NSTextAlignmentLeft;
     return btn;
 }
 - (CGRect)imageRectForContentRect:(CGRect)contentRect {
-    CGFloat y = CGRectGetMidY(contentRect) - 24*0.5;
-    CGFloat x = CGRectGetWidth(contentRect) - 24 - 12;
-    return CGRectMake(x, y, 24, 24);
+    CGFloat y = CGRectGetMidY(contentRect) - 16*0.5;
+    CGFloat x = CGRectGetWidth(contentRect) - 16 - 12;
+    return CGRectMake(x, y, 16, 16);
 }
 - (CGRect)titleRectForContentRect:(CGRect)contentRect {
     CGFloat width =  CGRectGetWidth(contentRect) - 14.;
     CGFloat height = CGRectGetHeight(contentRect);
     return CGRectMake(14., 0, width, height);
 }
+
 @end
 
 

@@ -37,7 +37,12 @@
 
 - (BJClassifyBtnContainerView *)btnContainerView {
     if (!_btnContainerView) {
-        _btnContainerView = [[BJClassifyBtnContainerView alloc] init];
+        __weak typeof(self) wSeft = self;
+        _btnContainerView = [[BJClassifyBtnContainerView alloc] initWithBlock:^(NSString *clickLabelText) {
+            if ([wSeft.delegate respondsToSelector:@selector(circleClassifyCell:didSelectedLabelText:)]) {
+                [wSeft.delegate circleClassifyCell:wSeft didSelectedLabelText:clickLabelText];
+            }
+        }];
         _btnContainerView.backgroundColor = [UIColor whiteColor];
     }
     return _btnContainerView;
@@ -48,7 +53,7 @@
     for (BJClassifyFristBtnModel *model in fristBtnModels) {
         [mArray addObject:model.name];
     }
-    _btnContainerView.picPathStringsArray = mArray;
+    _btnContainerView.labelTextsArray = mArray;
 }
 @end
 NSString * const bj_CircleClassifyCell = @"bj_CircleClassifyCell";

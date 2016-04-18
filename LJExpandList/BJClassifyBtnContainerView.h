@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^BJClassifyBtnContainerViewBlock)(NSString *clickLabelText);
+
 @interface BJClassifyBtnContainerView : UIView
-@property (nonatomic, strong) NSArray *picPathStringsArray;
+@property (nonatomic, strong) NSArray *labelTextsArray;
+- (instancetype)initWithBlock:(BJClassifyBtnContainerViewBlock) block ;//点击label事件
 @end

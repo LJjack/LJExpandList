@@ -13,7 +13,7 @@
 #import "BJCircleClassifyCell.h"
 #import "SDAutoLayout/UITableView+SDAutoTableViewCellHeight.h"
 
-@interface BJCircleClassifyViewController ()
+@interface BJCircleClassifyViewController ()<BJCircleClassifyCellDelegate>
 @property(nonatomic,assign)BOOL isOpen;
 @property(nonatomic,strong)NSMutableDictionary *headerDict;
 @property (strong, nonatomic) BJClassifyFristBtnResultModel *resultModel;
@@ -54,7 +54,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     BJCircleClassifyHeaderView *header = self.headerDict[@(section)];
-    
     if (header.isOpen) {
         return 1;
     }else{
@@ -64,7 +63,8 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     BJCircleClassifyCell *cell = [tableView dequeueReusableCellWithIdentifier:bj_CircleClassifyCell];
-    
+    cell.indexPath = indexPath;
+    cell.delegate = self;
     cell.fristBtnModels = self.selectedArray;
     return cell;
 }
@@ -75,11 +75,18 @@
     if (header == nil) {
         header = [[BJCircleClassifyHeaderView alloc] initWithReuseIdentifier:bj_CircleClassifyHeaderView];
         header.isOpen = NO;
+        __weak typeof(self) wSeft = self;
         [header headerClick:^(BJCircleClassifyHeaderView *myHeader) {
-            BJCircleClassifyHeaderView *myHeader1 = self.headerDict[@(myHeader.section)];
+            BJCircleClassifyHeaderView *myHeader1 = wSeft.headerDict[@(myHeader.section)];
             [myHeader1 setIsOpen:!myHeader1.isOpen];
-            self.selectedArray = self.resultModel.result[myHeader.section].sub;
-            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:header.section] withRowAnimation:UITableViewRowAnimationFade];
+            wSeft.selectedArray = wSeft.resultModel.result[myHeader.section].sub;
+            if (wSeft.selectedArray.count == 0) {
+                //跳转到下一界面
+                return ;
+            }
+            
+            
+            [wSeft.tableView reloadSections:[NSIndexSet indexSetWithIndex:header.section] withRowAnimation:UITableViewRowAnimationFade];
             
         }];
         header.btnTitle = _resultModel.result[section].name;
@@ -92,5 +99,13 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     return [tableView cellHeightForIndexPath:indexPath model:self.selectedArray keyPath:@"fristBtnModels" cellClass:[BJCircleClassifyCell class] contentViewWidth:[UIScreen mainScreen].bounds.size.width];
+}
+#pragma mark - BJCircleClassifyCellDelegate 
+- (void)circleClassifyCell:(BJCircleClassifyCell *)cell didSelectedLabelText:(NSString *)text {
+    BJCircleClassifyHeaderView *myHeader1 = self.headerDict[@(cell.indexPath.section)];
+    NSLog(@"%@",myHeader1.btnTitle);
+    NSLog(@"%@",text);
+    
+    
 }
 @end

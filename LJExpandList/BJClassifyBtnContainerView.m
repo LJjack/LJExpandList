@@ -10,20 +10,22 @@
 #import "UIView+SDAutoLayout.h"
 
 @interface BJClassifyBtnContainerView ()
-@property (strong, nonatomic) NSArray *imageViewsArray;
+@property (strong, nonatomic) NSArray *labelViewsArray;
 @property (assign, nonatomic) CGFloat margin;
+@property (copy, nonatomic) BJClassifyBtnContainerViewBlock block;
 @end
 
 
 @implementation BJClassifyBtnContainerView
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    if (self = [super initWithFrame:frame]) {
+- (instancetype)initWithBlock:(BJClassifyBtnContainerViewBlock) block {
+    if (self = [super init]) {
+        _block = block;
         [self setup];
     }
     return self;
 }
+
 
 - (void)setup
 {
@@ -43,45 +45,45 @@
         [temp addObject:label];
     }
     
-    self.imageViewsArray = [temp copy];
+    self.labelViewsArray = [temp copy];
 }
 
 
-- (void)setPicPathStringsArray:(NSArray *)picPathStringsArray
+- (void)setLabelTextsArray:(NSArray *)labelTextsArray
 {
-    _picPathStringsArray = picPathStringsArray;
+    _labelTextsArray = labelTextsArray;
     if (!_margin) {
-        _margin = 2;
+        _margin = 1.;
     }
     
-    for (long i = _picPathStringsArray.count; i < self.imageViewsArray.count; i++) {
-        UILabel *label = [self.imageViewsArray objectAtIndex:i];
+    for (long i = _labelTextsArray.count; i < self.labelViewsArray.count; i++) {
+        UILabel *label = [self.labelViewsArray objectAtIndex:i];
         label.hidden = YES;
     }
     
-    if (_picPathStringsArray.count == 0) {
+    if (_labelTextsArray.count == 0) {
         self.height = 0;
         self.fixedHeight = @(0);
         return;
     }
     
-    CGFloat itemW = [self itemWidthForPicPathArray:_picPathStringsArray];
+    CGFloat itemW = [self itemWidthForPicPathArray:_labelTextsArray];
     CGFloat itemH = 50.;
     
-    long perRowItemCount = [self perRowItemCountForPicPathArray:_picPathStringsArray];
+    long perRowItemCount = [self perRowItemCountForPicPathArray:_labelTextsArray];
     CGFloat margin = _margin;
     
-    [_picPathStringsArray enumerateObjectsUsingBlock:^(NSString *  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [_labelTextsArray enumerateObjectsUsingBlock:^(NSString *  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         long columnIndex = idx % perRowItemCount;
         long rowIndex = idx / perRowItemCount;
-        UILabel *imageView = [_imageViewsArray objectAtIndex:idx];
+        UILabel *imageView = [_labelViewsArray objectAtIndex:idx];
         imageView.hidden = NO;
         imageView.text = obj;
         imageView.frame = CGRectMake(columnIndex * (itemW + margin), rowIndex * (itemH + margin), itemW, itemH);
     }];
     
     CGFloat w = perRowItemCount * itemW + (perRowItemCount - 1) * margin;
-    int columnCount = ceilf(_picPathStringsArray.count * 1.0 / perRowItemCount);
+    int columnCount = ceilf(_labelTextsArray.count * 1.0 / perRowItemCount);
     CGFloat h = columnCount * itemH + (columnCount - 1) * margin;
     self.width = w;
     self.height = h;
@@ -94,7 +96,9 @@
 
 - (void)tapLabel:(UITapGestureRecognizer *)tap
 {
-    NSLog(@"===== %@",self.picPathStringsArray[tap.view.tag]);
+    if (_block) {
+        _block(self.labelTextsArray[tap.view.tag]);
+    }
 }
 
 - (CGFloat)itemWidthForPicPathArray:(NSArray *)array
